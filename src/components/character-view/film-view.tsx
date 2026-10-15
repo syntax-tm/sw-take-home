@@ -1,6 +1,7 @@
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchResource, intToRoman } from "@/utils";
+import Image from "next/image";
 
 export type Film = {
   title: string
@@ -24,6 +25,10 @@ type FilmResult = {
   film: Film | null;
   error: boolean;
 };
+
+const getPosterUrl = (episodeId: number): string => {
+  return `/img/films/${episodeId}.png`;
+}
 
 const getEpisodeSubtitle = (episodeId: number): string => {
   const romanNumeral = intToRoman(episodeId);
@@ -60,6 +65,7 @@ export default function FilmView({ url }: { url: string }) {
   }
 
   const { film } = result;
+  const posterUrl = getPosterUrl(film.episode_id);
 
   return (
     <Box
@@ -67,7 +73,6 @@ export default function FilmView({ url }: { url: string }) {
       aria-label={`${film.title} details`}
       sx={{
         display: "grid",
-        gridTemplateRows: "80px minmax(0, 1fr)",
         gap: 1.5,
         alignItems: "center",
         alignContent: "center",
@@ -80,13 +85,18 @@ export default function FilmView({ url }: { url: string }) {
         <Box
             aria-hidden="true"
             sx={{
-              width: 56,
               aspectRatio: "2/3",
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "action.hover",
+              position: "relative",
+              display: "grid",
+              maxHeight: 300,
+              width: 100,
             }}
-          />
+            >
+          <Image src={posterUrl} alt={film.title} fill={true} className="object-contain aspect-2/3" />
+        </Box>
       </Grid>
       <Stack direction="column" spacing={0.25} sx={{ minWidth: 0 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 700, textAlign: "center" }}>{film.title}</Typography>

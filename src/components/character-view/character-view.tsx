@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import StarshipView from "./starship-view";
 import VehiclesView from "./vehicles-view";
 import { fetchResource } from "@/utils";
 import FilmView from "./film-view";
+import DetailRows from "./detail-rows";
 
 // TODO move this type to the types folder along with all of the dependent models
 export type Person = {
@@ -59,32 +60,8 @@ function displayValue(value: string) {
   return value;
 }
 
-// TODO: move this to a separate reusable component
-function DetailRows({ items }: { items: [string, string][] }) {
-  return (
-    <Box sx={{ mt: 1, borderTop: "1px solid", borderLeft: "1px solid", borderColor: "divider" }}>
-      {items.map(([label, value]) => (
-        <Box
-          key={label}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 1.5,
-            px: 1.25,
-            py: 0.9,
-            borderRight: "1px solid",
-            borderBottom: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">{label}</Typography>
-          <Typography variant="body2" sx={{ textAlign: "right", overflowWrap: "anywhere" }}>
-            {displayValue(value)}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
-  );
+const getCharacterImageUrl = (id: string | number): string => {
+  return `/img/people/${id}.jpg`;
 }
 
 export default function CharacterView({ person }: { person: Person }) {
@@ -97,6 +74,7 @@ export default function CharacterView({ person }: { person: Person }) {
   const detailsLoading = loadedDetails.key !== detailsKey;
   const homeworld = detailsLoading ? null : loadedDetails.homeworld;
   const species = detailsLoading ? [] : loadedDetails.species;
+  const imageUrl = getCharacterImageUrl(resourceNumber(person.url));
 
   useEffect(() => {
     let active = true;
@@ -162,8 +140,8 @@ export default function CharacterView({ person }: { person: Person }) {
         <Avatar
           aria-hidden="true"
           sx={{ width: 56, height: 56, bgcolor: "grey.100", color: "text.secondary", fontWeight: 600 }}
+          src={imageUrl}
         >
-          {initials}
         </Avatar>
         <Box>
           <Typography component="h2" variant="h5" sx={{ fontWeight: 700 }}>

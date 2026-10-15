@@ -31,11 +31,16 @@ This project uses [`next/font`](https://nextjs.org) to automatically optimize an
 
 ## Testing
 
-Currently, there are **no unit tests** so running them is not an issue.
+> [!NOTE]
+> Currently, there are **no unit tests** so running them is not an issue.
 
-The reason for this is because I believe that unit tests should only be written when necessary to test business logic. Most of the time I see unit tests, they are just testing language features, more work than would ever be necessary, and their only real contibution is to increasing the build time.
+The reason for this is because I believe that unit tests should only be written when necessary to test business logic, or if you are told to do so and it's not your decision. Most of the time I see unit tests, they are just testing language features, more work than would ever be necessary, and their only real contibution is to increasing the build time.
 
 If there were to be some complex business logic added to this project, or rather any business logic, then I would write a test to verify that logic not only is working correctly now but even more importantly that it does not break later on.
+
+## Acknowledgements
+
+- [vieraboschkova/swapi-gallery](https://github.com/vieraboschkova/swapi-gallery)
 
 ## Learn More
 

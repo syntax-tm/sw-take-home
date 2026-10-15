@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Avatar, Box, Chip, Divider, Paper, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Avatar, Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
+import StarshipView from "./starship-view";
 
 // TODO move this type to the types folder along with all of the dependent models
 export type Person = {
@@ -39,6 +40,11 @@ type Homeworld = {
   orbital_period: string;
   gravity: string;
 };
+
+export interface Connection {
+  label: string;
+  value: React.ReactNode;
+}
 
 const filmTitles: Record<string, string> = {
   "1": "Episode IV · A New Hope",
@@ -140,19 +146,19 @@ export default function CharacterView({ person }: { person: Person }) {
     ["Skin color", displayValue(person.skin_color)],
   ];
 
-  const connections = [
-    [
-      "Starships",
-      person.starships.length
-        ? person.starships.map((url) => `Starship ${resourceNumber(url)}`).join(", ")
-        : "None listed",
-    ],
-    [
-      "Vehicles",
-      person.vehicles.length
+  const connections: Connection[] = [
+    {
+      label: "Starships",
+      value: person.starships.length
+        ? person.starships.map((url) => { return <StarshipView key={url} url={url} /> })
+        : <Typography variant="body2" color="text.secondary">None listed</Typography>,
+    },
+    {
+      label: "Vehicles",
+      value: person.vehicles.length
         ? person.vehicles.map((url) => `Vehicle ${resourceNumber(url)}`).join(", ")
-        : "None listed",
-    ],
+        : <Typography variant="body2" color="text.secondary">None listed</Typography>,
+    },
   ];
 
   return (
@@ -279,26 +285,29 @@ export default function CharacterView({ person }: { person: Person }) {
       <Divider />
 
       <Box component="section" sx={{ pt: 2.5 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-            columnGap: 3,
-            rowGap: 1.5,
-            mt: 1,
-          }}
-        >
-          {connections.map(([label, value]) => (
-            <Box key={label} sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {label}
-              </Typography>
-              <Typography variant="body2" sx={{ textAlign: "right", overflowWrap: "anywhere" }}>
-                {value}
-              </Typography>
-            </Box>
+        <Stack direction="row">
+          {connections.map((connection) => (
+            <React.Fragment key={connection.label}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {connection.label}
+                </Typography>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                    columnGap: 3,
+                    rowGap: 1.5,
+                    mt: 1,
+                  }}>
+                  <Typography variant="body2" sx={{ textAlign: "right", overflowWrap: "anywhere" }}>
+                    {connection.value}
+                  </Typography>
+                </Box>
+              </Box>
+            </React.Fragment>
           ))}
-        </Box>
+        </Stack>
       </Box>
     </Paper>
   );

@@ -5,6 +5,10 @@
     "/^node -e \"fetch\\('http://localhost:3000'\\)\\.then\\(async r => \\{ const text = await r\\.text\\(\\); console\\.log\\(\\{status:r\\.status, characters:text\\.includes\\('Characters'\\), person:text\\.includes\\('Luke Skywalker'\\), homeworld:text\\.includes\\('Homeworld'\\), species:text\\.includes\\('Species'\\), fallback:text\\.includes\\('Loading characters'\\)\\}\\); \\}\\)\\.catch\\(e => \\{ console\\.error\\(e\\); process\\.exitCode = 1; \\}\\)\"$/": {
       "approve": true,
       "matchCommandLine": true
+    },
+    "/^node -e \"fetch\\('https://swapi\\.info/api/vehicles/14'\\)\\.then\\(async r => \\{ const data = await r\\.json\\(\\); console\\.log\\(JSON\\.stringify\\(data, null, 2\\)\\); \\}\\)\\.catch\\(e => \\{ console\\.error\\(e\\); process\\.exitCode = 1; \\}\\)\"$/": {
+      "approve": true,
+      "matchCommandLine": true
     }
   },
   "files.associations": {

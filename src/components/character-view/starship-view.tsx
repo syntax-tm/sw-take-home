@@ -21,7 +21,17 @@ export type Starship = {
   url: string
 };
 
-export default function StarshipView({ starship }: { starship: Starship }) {
+// TODO: move this function to a shared utility file
+async function fetchResource<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Unable to load ${url}`);
+  return response.json();
+}
+
+export default async function StarshipView({ url }: { url: string }) {
+
+  const starship = await fetchResource<Starship>(url);
+
   return (
     <Box>
       <Typography variant="h6">{starship.name}</Typography>

@@ -3,6 +3,7 @@ import { Avatar, Box, Chip, Divider, Paper, Stack, Typography } from "@mui/mater
 import StarshipView from "./starship-view";
 import VehiclesView from "./vehicles-view";
 import { fetchResource } from "@/utils";
+import FilmView from "./film-view";
 
 // TODO move this type to the types folder along with all of the dependent models
 export type Person = {
@@ -43,19 +44,10 @@ type Homeworld = {
   gravity: string;
 };
 
-export interface Connection {
+export interface Transport {
   label: string;
   value: React.ReactNode;
 }
-
-const filmTitles: Record<string, string> = {
-  "1": "Episode IV · A New Hope",
-  "2": "Episode V · The Empire Strikes Back",
-  "3": "Episode VI · Return of the Jedi",
-  "4": "Episode I · The Phantom Menace",
-  "5": "Episode II · Attack of the Clones",
-  "6": "Episode III · Revenge of the Sith",
-};
 
 function resourceNumber(url: string) {
   return url.split("/").filter(Boolean).at(-1) ?? "?";
@@ -67,6 +59,7 @@ function displayValue(value: string) {
   return value;
 }
 
+// TODO: move this to a separate reusable component
 function DetailRows({ items }: { items: [string, string][] }) {
   return (
     <Box sx={{ mt: 1, borderTop: "1px solid", borderLeft: "1px solid", borderColor: "divider" }}>
@@ -142,7 +135,8 @@ export default function CharacterView({ person }: { person: Person }) {
     ["Skin color", displayValue(person.skin_color)],
   ];
 
-  const connections: Connection[] = [
+  // TODO: move these to a separate component for Starships and Vehicles, similar to Films
+  const transports: Transport[] = [
     {
       label: "Starships",
       value: person.starships.length
@@ -229,7 +223,6 @@ export default function CharacterView({ person }: { person: Person }) {
             </Typography>
           )}
         </Box>
-
         <Box component="section">
           <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
             Homeworld
@@ -272,8 +265,10 @@ export default function CharacterView({ person }: { person: Person }) {
         </Typography>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
           {person.films.map((url) => {
-            const id = resourceNumber(url);
-            return <Chip key={url} label={filmTitles[id] ?? `Film ${id}`} size="small" variant="outlined" />;
+            return (
+              <FilmView key={url} url={url} />
+            )
+              // <Chip key={url} label={filmTitles[id] ?? `Film ${id}`} size="small" variant="outlined" />;
           })}
         </Box>
       </Box>
@@ -286,11 +281,11 @@ export default function CharacterView({ person }: { person: Person }) {
           spacing={2}
           sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))" } }}
         >
-          {connections.map((connection) => (
-            <React.Fragment key={connection.label}>
-              <Box component="section" aria-label={connection.label} sx={{ minWidth: 0 }}>
+          {transports.map((transport) => (
+            <React.Fragment key={transport.label}>
+              <Box component="section" aria-label={transport.label} sx={{ minWidth: 0 }}>
                 <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
-                  {connection.label}
+                  {transport.label}
                 </Typography>
                 <Box
                   sx={{
@@ -298,7 +293,7 @@ export default function CharacterView({ person }: { person: Person }) {
                     gap: 1,
                     mt: 1,
                   }}>
-                  {connection.value}
+                  {transport.value}
                 </Box>
               </Box>
             </React.Fragment>

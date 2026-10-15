@@ -1,5 +1,26 @@
 {
   "chat.tools.terminal.autoApprove": {
-    "yarn eslint": true
+    "yarn eslint": true,
+    "yarn tsc": true,
+    "/^node -e \"fetch\\('http://localhost:3000'\\)\\.then\\(async r => \\{ const text = await r\\.text\\(\\); console\\.log\\(\\{status:r\\.status, characters:text\\.includes\\('Characters'\\), person:text\\.includes\\('Luke Skywalker'\\), homeworld:text\\.includes\\('Homeworld'\\), species:text\\.includes\\('Species'\\), fallback:text\\.includes\\('Loading characters'\\)\\}\\); \\}\\)\\.catch\\(e => \\{ console\\.error\\(e\\); process\\.exitCode = 1; \\}\\)\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  },
+  "files.associations": {
+    "*.json": "jsonc"
+  },
+  "[json]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace",
+    "editor.trimAutoWhitespace": true,
+    "editor.indentSize": 2,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "tailwindCSS.experimental.classRegex": [
+      ["className?:\\s*['\"`]([^'\"`]*?)['\"`]", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    ]
   }
 }

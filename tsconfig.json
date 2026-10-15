@@ -13,13 +13,56 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "inlineSources": false,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true,
+    "newLine": "lf",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@enums": [
+        "./src/types/enums/"
+      ],
+      "@enums/*": [
+        "./src/types/enums/*"
+      ],
+      "@hooks": [
+        "./src/hooks/"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@providers": [
+        "./src/providers/"
+      ],
+      "@providers/*": [
+        "./src/providers/*"
+      ],
+      "types": [
+        "./src/types/"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "utils": [
+        "./src/utils/"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ],
     }
   },
   "include": [

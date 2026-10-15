@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Avatar, Box, Chip, Divider, Paper, Typography } from "@mui/material";
 
+// TODO move this type to the types folder along with all of the dependent models
 export type Person = {
   name: string;
   url: string;
@@ -15,6 +17,27 @@ export type Person = {
   species: string[];
   vehicles: string[];
   starships: string[];
+};
+
+type Species = {
+  name: string;
+  classification: string;
+  designation: string;
+  average_height: string;
+  average_lifespan: string;
+  language: string;
+};
+
+type Homeworld = {
+  name: string;
+  population: string;
+  terrain: string;
+  climate: string;
+  surface_water: string;
+  diameter: string;
+  rotation_period: string;
+  orbital_period: string;
+  gravity: string;
 };
 
 const filmTitles: Record<string, string> = {
@@ -36,7 +59,70 @@ function displayValue(value: string) {
   return value;
 }
 
+async function fetchResource<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Unable to load ${url}`);
+  return response.json();
+}
+
+function DetailRows({ items }: { items: [string, string][] }) {
+  return (
+    <Box sx={{ mt: 1, borderTop: "1px solid", borderLeft: "1px solid", borderColor: "divider" }}>
+      {items.map(([label, value]) => (
+        <Box
+          key={label}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 1.5,
+            px: 1.25,
+            py: 0.9,
+            borderRight: "1px solid",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Typography variant="caption" color="text.secondary">{label}</Typography>
+          <Typography variant="body2" sx={{ textAlign: "right", overflowWrap: "anywhere" }}>
+            {displayValue(value)}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 export default function CharacterView({ person }: { person: Person }) {
+  const detailsKey = `${person.homeworld}|${person.species.join("|")}`;
+  const [loadedDetails, setLoadedDetails] = useState<{
+    key: string;
+    homeworld: Homeworld | null;
+    species: Species[];
+  }>({ key: "", homeworld: null, species: [] });
+  const detailsLoading = loadedDetails.key !== detailsKey;
+  const homeworld = detailsLoading ? null : loadedDetails.homeworld;
+  const species = detailsLoading ? [] : loadedDetails.species;
+
+  useEffect(() => {
+    let active = true;
+
+    Promise.all([
+      fetchResource<Homeworld>(person.homeworld).catch(() => null),
+      Promise.all(person.species.map((url) => fetchResource<Species>(url).catch(() => null))),
+    ]).then(([loadedHomeworld, loadedSpecies]) => {
+      if (!active) return;
+      setLoadedDetails({
+        key: detailsKey,
+        homeworld: loadedHomeworld,
+        species: loadedSpecies.filter((item): item is Species => item !== null),
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [detailsKey, person.homeworld, person.species]);
+
   const initials = person.name
     .split(/\s+/)
     .slice(0, 2)
@@ -44,7 +130,7 @@ export default function CharacterView({ person }: { person: Person }) {
     .join("")
     .toUpperCase();
 
-  const attributes = [
+  const attributes: [string, string][] = [
     ["Birth year", displayValue(person.birth_year)],
     ["Gender", displayValue(person.gender)],
     ["Height", person.height === "unknown" ? "Unknown" : `${person.height} cm`],
@@ -55,13 +141,6 @@ export default function CharacterView({ person }: { person: Person }) {
   ];
 
   const connections = [
-    ["Homeworld", `Planet ${resourceNumber(person.homeworld)}`],
-    [
-      "Species",
-      person.species.length
-        ? person.species.map((url) => `Species ${resourceNumber(url)}`).join(", ")
-        : "Unspecified",
-    ],
     [
       "Starships",
       person.starships.length
@@ -102,40 +181,84 @@ export default function CharacterView({ person }: { person: Person }) {
 
       <Divider />
 
-      <Box component="section" sx={{ py: 2.5 }}>
-        <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
-          Attributes
-        </Typography>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr 1fr", sm: "repeat(3, minmax(0, 1fr))" },
-            mt: 1,
-            borderTop: "1px solid",
-            borderLeft: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          {attributes.map(([label, value]) => (
-            <Box
-              key={label}
-              sx={{
-                minWidth: 0,
-                px: 1.5,
-                py: 1.25,
-                borderRight: "1px solid",
-                borderBottom: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-                {label}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "repeat(3, minmax(0, 1fr))" },
+          gap: { xs: 2, md: 2.5 },
+          py: 2.5,
+        }}
+      >
+        <Box component="section">
+          <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
+            Attributes
+          </Typography>
+          <DetailRows items={attributes} />
+        </Box>
+
+        <Box component="section">
+          <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
+            Species
+          </Typography>
+          {detailsLoading ? (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Loading species...
+            </Typography>
+          ) : species.length ? (
+            species.map((item) => (
+              <Box key={item.name}>
+                <Typography variant="subtitle2" sx={{ mt: 1, fontWeight: 700 }}>
+                  {item.name}
+                </Typography>
+                <DetailRows
+                  items={[
+                    ["Classification", item.classification],
+                    ["Designation", item.designation],
+                    ["Average height", item.average_height === "unknown" ? item.average_height : `${item.average_height} cm`],
+                    ["Average lifespan", item.average_lifespan === "unknown" ? item.average_lifespan : `${item.average_lifespan} years`],
+                    ["Language", item.language],
+                  ]}
+                />
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              No species listed.
+            </Typography>
+          )}
+        </Box>
+
+        <Box component="section">
+          <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
+            Homeworld
+          </Typography>
+          {detailsLoading ? (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Loading homeworld...
+            </Typography>
+          ) : homeworld ? (
+            <>
+              <Typography variant="subtitle2" sx={{ mt: 1, fontWeight: 700 }}>
+                {homeworld.name}
               </Typography>
-              <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>
-                {value}
-              </Typography>
-            </Box>
-          ))}
+              <DetailRows
+                items={[
+                  ["Population", homeworld.population],
+                  ["Terrain", homeworld.terrain],
+                  ["Climate", homeworld.climate],
+                  ["Surface water", homeworld.surface_water === "unknown" ? homeworld.surface_water : `${homeworld.surface_water}%`],
+                  ["Diameter", homeworld.diameter === "unknown" ? homeworld.diameter : `${homeworld.diameter} km`],
+                  ["Rotation period", homeworld.rotation_period === "unknown" ? homeworld.rotation_period : `${homeworld.rotation_period} hr`],
+                  ["Orbital period", homeworld.orbital_period === "unknown" ? homeworld.orbital_period : `${homeworld.orbital_period} days`],
+                  ["Gravity", homeworld.gravity],
+                ]}
+              />
+            </>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Homeworld details unavailable.
+            </Typography>
+          )}
         </Box>
       </Box>
 
@@ -156,9 +279,6 @@ export default function CharacterView({ person }: { person: Person }) {
       <Divider />
 
       <Box component="section" sx={{ pt: 2.5 }}>
-        <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
-          Connections
-        </Typography>
         <Box
           sx={{
             display: "grid",

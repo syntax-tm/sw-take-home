@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  basePath: "",
+  compiler: {
+    styledComponents: true,
+  },
+  logging: {
+    browserToTerminal: true,
+  },
+  images: {
+    unoptimized: true,
+  },
   experimental: {
     agentFeedback: true,
   },

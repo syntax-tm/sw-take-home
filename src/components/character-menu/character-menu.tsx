@@ -1,7 +1,7 @@
-import PeopleBrowser from "./people-browser";
+import PeopleBrowser from "./character-browser";
 import type { Person } from "../character-view/character-view";
 
-export default async function PeopleMenu() {
+export default async function CharacterMenu() {
   const response = await fetch("https://swapi.info/api/people");
   if (!response.ok) {
     throw new Error("Unable to load Star Wars characters.");

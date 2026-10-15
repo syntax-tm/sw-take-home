@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Box, Typography } from "@mui/material";
-import PeopleMenu from "@components/people-menu/people-menu";
+import PeopleMenu from "@/components/character-menu/character-menu";
 import AppThemeProvider from "@providers/app-theme-provider";
 
 export default function Home() {

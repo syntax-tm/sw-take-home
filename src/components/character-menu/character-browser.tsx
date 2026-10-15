@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CharacterView, { type Person } from "../character-view/character-view";
 
-export default function PeopleBrowser({ people }: { people: Person[] }) {
+export default function CharacterBrowser({ people }: { people: Person[] }) {
   const [selectedUrl, setSelectedUrl] = useState(people[0]?.url ?? "");
   const [search, setSearch] = useState("");
   const selectedPerson = people.find((person) => person.url === selectedUrl);

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
 import StarshipView from "./starship-view";
+import VehiclesView from "./vehicles-view";
+import { fetchResource } from "@/utils";
 
 // TODO move this type to the types folder along with all of the dependent models
 export type Person = {
@@ -63,12 +65,6 @@ function displayValue(value: string) {
   if (value === "unknown") return "Unknown";
   if (value === "n/a") return "N/A";
   return value;
-}
-
-async function fetchResource<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Unable to load ${url}`);
-  return response.json();
 }
 
 function DetailRows({ items }: { items: [string, string][] }) {
@@ -156,7 +152,7 @@ export default function CharacterView({ person }: { person: Person }) {
     {
       label: "Vehicles",
       value: person.vehicles.length
-        ? person.vehicles.map((url) => `Vehicle ${resourceNumber(url)}`).join(", ")
+        ? person.vehicles.map((url) => <VehiclesView key={url} url={url} />)
         : <Typography variant="body2" color="text.secondary">None listed</Typography>,
     },
   ];
@@ -285,24 +281,24 @@ export default function CharacterView({ person }: { person: Person }) {
       <Divider />
 
       <Box component="section" sx={{ pt: 2.5 }}>
-        <Stack direction="row">
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))" } }}
+        >
           {connections.map((connection) => (
             <React.Fragment key={connection.label}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
-                <Typography variant="body2" color="text.secondary">
+              <Box component="section" aria-label={connection.label} sx={{ minWidth: 0 }}>
+                <Typography component="h3" variant="overline" sx={{ fontWeight: 700 }}>
                   {connection.label}
                 </Typography>
                 <Box
                   sx={{
                     display: "grid",
-                    gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-                    columnGap: 3,
-                    rowGap: 1.5,
+                    gap: 1,
                     mt: 1,
                   }}>
-                  <Typography variant="body2" sx={{ textAlign: "right", overflowWrap: "anywhere" }}>
-                    {connection.value}
-                  </Typography>
+                  {connection.value}
                 </Box>
               </Box>
             </React.Fragment>

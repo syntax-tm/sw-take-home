@@ -2,7 +2,7 @@ export * from './array';
 export * from './case-insensitive-map';
 export * from './console';
 export * from './env';
-export * from './fetch-resource';
+export * from './http';
 export * from './generic';
 export * from './json';
 export * from './os';

@@ -1,6 +1,6 @@
 import { fg, bg, reset, warn, info, error, debug } from "./console";
 
-interface FetchOptions {
+export interface FetchOptions {
   method: string;
   headers?: Record<string, string>;
   maxRetries?: number;
